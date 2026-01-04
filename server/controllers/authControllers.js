@@ -1,5 +1,7 @@
 import { User } from "../models/userModel.js";
-import bycryptjs from "bycryptjs";
+import bcryptjs from "bcryptjs";
+import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
+
 
 export const signup = async (req, res) => {
   const { email, password, name } = req.body;
@@ -15,7 +17,7 @@ export const signup = async (req, res) => {
         .json({ success: false, message: "User already exists" });
     }
 
-    const hashedPassword = await bycryptjs.hash(password, 10);
+    const hashedPassword = await bcryptjs.hash(password, 10);
     const verificationToken = Math.floor(
       100000 + Math.random() * 900000
     ).toString();
@@ -31,8 +33,15 @@ export const signup = async (req, res) => {
     await user.save();
 
     // jwt
-    generateTokenAndSetCookie(res, user._id);
-
+    const token = generateTokenAndSetCookie(res, user._id);
+    res.status(201).json({
+      success: true,
+      message: "User created successfully",
+      user: {
+        ...user._doc,
+        password: undefined,
+      },
+    });
   } catch (error) {
     res.status(400).json({ success: false, message: "User already exists" });
   }
