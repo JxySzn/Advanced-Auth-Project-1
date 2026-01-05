@@ -11,6 +11,7 @@ export const signup = async (req, res) => {
       throw new Error("All fields are required");
     }
     const userAlreadyExists = await User.findOne({ email });
+    console.log("user already exists: ", userAlreadyExists);
     if (userAlreadyExists) {
       return res
         .status(400)
