@@ -81,7 +81,10 @@ export const verifyEmail = async (req, res) => {
         password: undefined,
       },
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log("error in verifyEmail", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
 };
 
 // login  route handler
